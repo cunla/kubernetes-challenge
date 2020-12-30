@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learnk8s-deployment
+  labels:
+    app: k8sapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8sapp
+  template:
+    metadata:
+      labels:
+        app: k8sapp
+    spec:
+      containers:
+      - name: k8sapp
+        image: cunla/k8s-challenge
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 80
+        env:
+        - name: NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: k8s-configmap
+              key: username
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learnk8s-service
+spec:
+  # type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4000
+      # nodePort: 30000
+  selector:
+    app: k8sapp
+
